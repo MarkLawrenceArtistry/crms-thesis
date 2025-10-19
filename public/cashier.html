@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-precision CRMS - Cashier</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar will be pasted below -->
+        <aside class="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </header>
+
+            <section class="content-card">
+                <h1 class="main-title">Cashier</h1>
+                <div class="cashier-container">
+                    <!-- Left Column: Now Serving -->
+                    <div class="cashier-column" id="cashier-now-serving-container">
+                        <h3>Now Serving for Payment</h3>
+                        <div class="placeholder-text">Waiting for next patient...</div>
+                        <!-- Patient card will be injected here -->
+                    </div>
+
+                    <!-- Right Column: Payment Details -->
+                    <div class="cashier-column" id="cashier-payment-details-container">
+                        <h3>Visit Details</h3>
+                        <div class="placeholder-text">Select a patient to view details.</div>
+                        <!-- Details and payment form will be injected here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <div class="display-image">
+                <img src="assets/checked.png" alt="check icon">
+            </div>
+            <p id="confirmation-question"></p>
+            <div class="display-buttons">
+                <button class="btn ok-btn">Ok</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

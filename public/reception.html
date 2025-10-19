@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-precision CRMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/hp-logo.png" alt="Hi-Precision Logo" class="sidebar-logo">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-group-title">Workflow</span>
+                    <a href="reception.html" class="nav-link active">Reception</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Menu</span>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="appointments.html" class="nav-link">Appointments</a>
+                    <a href="inventory.html" class="nav-link">Inventory</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">System</span>
+                    <a href="index.html" class="nav-link" id="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </header>
+
+            <section class="content-card">
+                <h1 class="main-title">Reception</h1>
+                <div class="reception-workflow-container">
+                    <!-- Column 1: Patient Search -->
+                    <div class="workflow-column">
+                        <h3>1. Find Patient</h3>
+                        <div class="search-bar">
+                             <input type="text" placeholder="Search by name..." id="reception-patient-search">
+                        </div>
+                        <div id="patient-search-results-container" class="search-results">
+                           <p class="placeholder-text">Search for a patient to begin.</p>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Selected Patient -->
+                    <div class="workflow-column">
+                        <h3>2. Selected Patient</h3>
+                        <div id="selected-patient-container" class="selected-entity">
+                            <p class="placeholder-text">No patient selected.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-card">
+                <h1 class="main-title">Queue Management</h1>
+                <div class="queue-management-container">
+                    <!-- Column for Payment Queue -->
+                    <div class="queue-column">
+                        <div class="queue-header">
+                            <h3>Payment Queue</h3>
+                            <button id="call-next-payment-btn" class="btn btn-secondary">Call Next</button>
+                        </div>
+                        <div id="payment-queue-list" class="queue-list">
+                            <p class="placeholder-text">Loading queue...</p>
+                        </div>
+                    </div>
+                    <!-- In the future, other columns can go here -->
+                    <!-- <div class="queue-column"> ... </div> -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- START NEW VISIT MODAL -->
+    <div id="new-visit-modal" class="modal">
+        <div class="modal-content modal-lg">
+             <div class="modal-header">
+                <h2 id="new-visit-header" class="modal-title">New Visit for...</h2>
+                <span class="close-btn" id="close-new-visit-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="visit-service-selector">
+                    <!-- Left Pane: Available Services -->
+                    <div class="service-list-pane">
+                        <h3>Available Services</h3>
+                        <input type="text" id="service-search-input" placeholder="Search services...">
+                        <div id="available-services-list">
+                            <!-- Services will be loaded here -->
+                        </div>
+                    </div>
+                    <!-- Right Pane: Selected Services -->
+                    <div class="service-cart-pane">
+                        <h3>Selected Services</h3>
+                        <div id="selected-services-list">
+                           <p class="placeholder-text">Add services from the left.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-visit-btn" class="btn btn-primary">Confirm Visit & Generate Queue Number</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visit Confirmation Modal -->
+     <div id="visit-confirmation-modal" class="modal">
+        <div class="modal-content">
+            <div class="display-image">
+                <img src="assets/checked.png" alt="check icon">
+            </div>
+            <h2 style="text-align: center;">Visit Created!</h2>
+            <p id="visit-confirmation-message" style="text-align: center; font-size: 1.2rem;"></p>
+            <div class="display-buttons">
+                <button class="btn ok-btn">Ok</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

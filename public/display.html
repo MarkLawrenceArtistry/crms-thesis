@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Display</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="display-body">
+    <div id="audio-overlay" class="audio-overlay">
+        <div class="audio-overlay-content">
+            <h1>Queue Display</h1>
+            <p>Click anywhere to start and enable audio notifications.</p>
+        </div>
+    </div>
+
+    <div class="display-container">
+        <header class="display-header">
+            <img src="assets/hp-logo.png" alt="Hi-Precision Logo" class="display-logo">
+            <h1>Queue Status</h1>
+        </header>
+
+        <main class="display-main">
+            <div class="now-serving-card">
+                <div class="now-serving-title">NOW SERVING</div>
+                <div id="now-serving-number" class="now-serving-number-text">----</div>
+                <div class="now-serving-instruction">
+                    Please proceed to
+                    <span id="now-serving-counter" class="now-serving-counter-text">--</span>
+                </div>
+            </div>
+
+            <div class="recently-called-card">
+                <div class="recently-called-title">Recently Called</div>
+                <ul id="recently-called-list" class="recently-called-list">
+                    <!-- Numbers will be added here -->
+                    <li class="placeholder-text">Waiting for next number...</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

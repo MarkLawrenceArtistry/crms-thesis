@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-precision CRMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/hp-logo.png" alt="Hi-Precision Logo" class="sidebar-logo">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-group-title">Workflow</span>
+                    <a href="reception.html" class="nav-link">Reception</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Menu</span>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="appointments.html" class="nav-link">Appointments</a>
+                    <a href="inventory.html" class="nav-link active">Inventory</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">System</span>
+                    <a href="index.html" class="nav-link" id="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <button id="add-medicine-btn" class="btn btn-primary">Add New Item</button>
+            </header>
+
+            <!-- VIEW DATA VIA TABLE -->
+            <section class="content-card">
+                <h1 class="main-title">Medicine Inventory</h1>
+                <div class="controls-container">
+                    <div class="search-bar">
+                        <form id="search-patient-form">
+                            <input type="text" placeholder="Search..." id="search-medicine-input">
+                        </form>
+                    </div>
+                </div>
+                <div id="inventory-list-container" class="table-container">
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="add-medicine-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-medicine-modal">&times;</span>
+            <h2>Medicine Details</h2>
+            <form id="add-medicine-form" class="modal-form">
+                <h3>Add New Medicine</h3>
+                <div>
+                    <label class="small-lbl">Name</label>
+                    <input type="text" id="medicine-name" placeholder="Medicine Name" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Quantity</label>
+                    <input type="number" id="medicine-qty" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Description</label>
+                    <textarea id="medicine-description" placeholder="Add description.." rows="5" cols="30"></textarea>
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="update-medicine-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-upd-medicine-modal">&times;</span>
+            <h2>Medicine Details</h2>
+            <form id="update-medicine-form" class="modal-form">
+                <h3>Edit Medicine</h3>
+                <div>
+                    <label class="small-lbl">Name</label>
+                    <input type="text" id="upd-medicine-name" disabled>
+                </div>
+                <div>
+                    <label class="small-lbl">Quantity</label>
+                    <input type="number" id="upd-medicine-qty" placeholder="ex. 10">
+                </div>
+                <div>
+                    <label class="small-lbl">Description</label>
+                    <textarea id="upd-medicine-description" placeholder="Add description.." rows="5" cols="30"></textarea>
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <p id="confirmation-question"></p>
+            <div class="confirmation-buttons">
+                <button class="btn yes-btn">Yes</button>
+                <button class="btn cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

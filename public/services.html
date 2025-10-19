@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-precision CRMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/hp-logo.png" alt="Hi-Precision Logo" class="sidebar-logo">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-group-title">Workflow</span>
+                    <a href="reception.html" class="nav-link">Reception</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Menu</span>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link">Patients</a>
+                    <a href="appointments.html" class="nav-link">Appointments</a>
+                    <a href="inventory.html" class="nav-link">Inventory</a>
+                    <a href="services.html" class="nav-link active">Services</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">System</span>
+                    <a href="index.html" class="nav-link" id="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <button id="add-service-btn" class="btn btn-primary">Add New Service</button>
+            </header>
+
+            <section class="content-card">
+                <h1 class="main-title">Service Management</h1>
+                <div id="service-list-container" class="table-container">
+                    <!-- Service table will be inserted here by JavaScript -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ADD/UPDATE MODAL -->
+    <div id="service-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-service-modal">&times;</span>
+            <form id="service-form" class="modal-form">
+                <h3 id="service-modal-title">Add New Service</h3>
+                <input type="hidden" id="service-id">
+                <div>
+                    <label class="small-lbl">Service Name</label>
+                    <input type="text" id="service-name" placeholder="e.g., Chest X-ray (PA)" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Category</label>
+                    <input type="text" id="service-category" placeholder="e.g., Radiology" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Price</label>
+                    <input type="number" id="service-price" step="0.01" placeholder="e.g., 550.00" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Description</label>
+                    <textarea id="service-description" placeholder="Optional details..." rows="3"></textarea>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="service-requires-specimen">
+                    <label for="service-requires-specimen">Requires Specimen (e.g., stool, urine)</label>
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <p id="confirmation-question"></p>
+            <div class="confirmation-buttons">
+                <button class="btn yes-btn">Yes</button>
+                <button class="btn cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

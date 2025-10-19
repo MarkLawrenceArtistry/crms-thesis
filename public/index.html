@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-precision CRMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="public-container">
+        <div class="login-card">
+            <div class="divider welcome">
+                <div class="image-div">
+                    <img src="assets/hero.png" id="hero-img">
+                </div>
+                <div>
+                    <h1>Hello, welcome!</h1>
+                    <p>Enter login credentials to access the system.</p>
+                </div>
+            </div>
+            <div class="divider form">
+                <div class="login-form-div">
+                    <form id="login-form">
+                        <div>
+                            <label class="small-lbl">Username</label>
+                            <input type="text" id="username-login" placeholder="Admin" required>
+                        </div>
+                        <div>
+                            <label class="small-lbl">Password</label>
+                            <input type="password" id="password-login" placeholder="123" required>
+                        </div>
+                        <div>
+                            <button type="submit">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="display-modal" class="modal">
+        <div class="modal-content">
+            <div class="display-image">
+                <img src="" alt="check icon" id="display-image-tag">
+            </div>
+            <p id="display-text"></p>
+            <div class="display-buttons">
+                <button class="btn ok-btn">Ok</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

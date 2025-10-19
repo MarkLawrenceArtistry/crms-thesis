@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-precision CRMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/hp-logo.png" alt="Hi-Precision Logo" class="sidebar-logo">
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-group-title">Workflow</span>
+                    <a href="reception.html" class="nav-link">Reception</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Menu</span>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="patients.html" class="nav-link active">Patients</a>
+                    <a href="appointments.html" class="nav-link">Appointments</a>
+                    <a href="inventory.html" class="nav-link">Inventory</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                </div>
+                <div class="nav-group">
+                    <span class="nav-group-title">System</span>
+                    <a href="index.html" class="nav-link" id="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <button id="add-patient-btn" class="btn btn-primary">Add New Patient</button>
+            </header>
+
+            <!-- VIEW DATA VIA TABLE -->
+            <section class="content-card">
+                <h1 class="main-title">Patient Records</h1>
+                <div class="controls-container">
+                    <div class="search-bar">
+                        <form id="search-patient-form">
+                            <input type="text" placeholder="Search..." id="search-patient-input">
+                        </form>
+                    </div>
+                </div>
+                <div id="patient-list-container" class="table-container">
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ADD DATA VIA MODAL -->
+    <div id="add-patient-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-patient-modal">&times;</span>
+            <h2>Patient Management</h2>
+            <form id="add-patient-form" class="modal-form">
+                <h3>Add New Patient</h3>
+                <div>
+                    <label class="small-lbl">Full Name</label>
+                    <input type="text" id="patient-name" placeholder="Full Name" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Date of Birth</label>
+                    <input type="date" id="patient-dob" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Address</label>
+                    <textarea id="patient-address" placeholder="Address" rows="5" cols="30"></textarea>
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UPDATE DATA VIA MODAL -->
+    <div id="update-patient-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-upd-patient-modal">&times;</span>
+            <h2>Patient Management</h2>
+            <form id="update-patient-form" class="modal-form">
+                <h3>Edit Patient</h3>
+                <div>
+                    <label class="small-lbl">Full Name</label>
+                    <input type="text" id="upd-patient-name" placeholder="Full Name" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Date of Birth</label>
+                    <input type="date" id="upd-patient-dob" required>
+                </div>
+                <div>
+                    <label class="small-lbl">Address</label>
+                    <textarea id="upd-patient-address" placeholder="Address" rows="5" cols="30"></textarea>
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <p id="confirmation-question"></p>
+            <div class="confirmation-buttons">
+                <button class="btn yes-btn">Yes</button>
+                <button class="btn cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js" type="module"></script>
+</body>
+</html>
