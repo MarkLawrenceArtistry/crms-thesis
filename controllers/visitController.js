@@ -1,4 +1,4 @@
-const { dbRun, dbGet } = require('../db-utils'); // <-- IMPORTANT
+const { dbAll, dbGet } = require('../db-utils'); // <-- IMPORTANT
 const { getIO } = require('../socket');
 
 // POST /api/visits
@@ -61,48 +61,40 @@ exports.createVisit = async (req, res) => {
 };
 
 exports.getVisitDetails = async (req, res) => {
-    const { id } = req.params; // visit_id
+    const { id } = req.params; // This is the visit_id
 
     try {
-        const patientQuery = `SELECT p.* FROM patients p JOIN visits v ON p.id = v.patient_id WHERE v.id = ?`;
+        // 1. Get the patient's information for this visit
+        const patientQuery = `SELECT p.*, v.id as visit_id FROM patients p JOIN visits v ON p.id = v.patient_id WHERE v.id = ?`;
         const patient = await dbGet(patientQuery, [id]);
 
         if (!patient) {
             return res.status(404).json({ success: false, data: 'Visit not found.' });
         }
 
+        // 2. Get all services associated with this visit
         const servicesQuery = `
-            SELECT s.* FROM services s 
+            SELECT s.* 
+            FROM services s 
             JOIN visit_services vs ON s.id = vs.service_id 
             WHERE vs.visit_id = ?`;
-        const services = await db.all(servicesQuery, [id], (err, rows) => {
-             if (err) throw err;
-             return rows;
-        });
+        const services = await dbAll(servicesQuery, [id]); // <-- USING THE CORRECT PROMISE-BASED FUNCTION
 
-        // The db.all method uses callbacks, so we wrap it in a promise to use await
-        const getServices = new Promise((resolve, reject) => {
-            db.all(servicesQuery, [id], (err, rows) => {
-                if(err) reject(err);
-                resolve(rows);
-            });
-        });
-        
-        const servicesResult = await getServices;
-        
-        const totalAmount = servicesResult.reduce((sum, service) => sum + service.price, 0);
+        // 3. Calculate the total amount
+        const totalAmount = services.reduce((sum, service) => sum + service.price, 0);
 
+        // 4. Send the complete data packet
         res.status(200).json({
             success: true,
             data: {
                 patient,
-                services: servicesResult,
+                services,
                 totalAmount
             }
         });
 
     } catch (error) {
-        console.error('Error fetching visit details:', error);
+        console.error(`Error fetching details for visit ID ${id}:`, error);
         res.status(500).json({ success: false, data: 'Internal server error.' });
     }
 };

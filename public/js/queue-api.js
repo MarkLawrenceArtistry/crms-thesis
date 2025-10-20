@@ -27,3 +27,11 @@ export async function callNext(queueType, counterNumber) {
     }
     return result.data;
 }
+
+export async function fetchNowServing(queueType) {
+    const response = await fetch(`/api/queues/now-serving?type=${queueType}`);
+    if (!response.ok) throw new Error('Failed to fetch now serving patient.');
+    const result = await response.json();
+    if (!result.success) throw new Error(result.data);
+    return result.data;
+}

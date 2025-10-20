@@ -38,4 +38,17 @@ function dbGet(sql, params = []) {
     });
 }
 
-module.exports = { dbRun, dbGet };
+function dbAll(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        db.all(sql, params, (err, rows) => {
+            if (err) {
+                console.error('DB All Error:', err.message);
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+}
+
+module.exports = { dbRun, dbGet, dbAll };

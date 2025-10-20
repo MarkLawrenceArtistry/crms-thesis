@@ -7,6 +7,7 @@ import * as appointmentApi from './js/appointments-api.js'
 import * as serviceApi from './js/service-api.js';
 import * as visitApi from './js/visit-api.js';
 import * as queueApi from './js/queue-api.js';
+import * as paymentApi from './js/payment-api.js';
 
 import { renderPatients } from './js/ui-patient.js'
 import { renderMedicines } from './js/ui-inventory.js'
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentVisitPatient = null;
     let allServices = [];
     let selectedServices = new Map();
+    let currentVisitDetails = null;
 
     let socket;
 
@@ -97,6 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const serviceListContainer = document.querySelector('#service-list-container');
 
 
+
+    // CASHIER
+    const cashierNowServingContainer = document.querySelector('#cashier-now-serving-container');
+    const cashierPaymentDetailsContainer = document.querySelector('#cashier-payment-details-container');
     
 
 
@@ -211,6 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (paymentQueueList) {
                 loadQueues();
             }
+
+            if (cashierNowServingContainer) { // If on cashier page
+                loadNowServing();
+            }
         });
 
         socket.on('now_serving', (data) => {
@@ -222,6 +232,94 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // --- HELPER FUNCTIONS for Cashier Page ---
+    async function loadNowServing() {
+        try {
+            const nowServing = await queueApi.fetchNowServing('Payment');
+            if (nowServing) {
+                currentVisitDetails = await visitApi.fetchVisitDetails(nowServing.visit_id);
+                renderCashierView(nowServing, currentVisitDetails);
+            } else {
+                currentVisitDetails = null;
+                renderCashierView(null, null); // Clear the view
+            }
+        } catch (err) {
+            console.error(err);
+            cashierNowServingContainer.innerHTML = `<p class="error-message">Error loading patient.</p>`;
+        }
+    }
+
+    function renderCashierView(nowServing, visitDetails) {
+        if (!nowServing || !visitDetails) {
+            cashierNowServingContainer.innerHTML = `<h3>Now Serving for Payment</h3><div class="placeholder-text">Waiting for next patient...</div>`;
+            cashierPaymentDetailsContainer.innerHTML = `<h3>Visit Details</h3><div class="placeholder-text">Select a patient to view details.</div>`;
+            return;
+        }
+
+        // Render Left Column: Now Serving
+        cashierNowServingContainer.innerHTML = `
+            <h3>Now Serving for Payment</h3>
+            <div class="selected-patient-card">
+                <h4>${visitDetails.patient.name}</h4>
+                <p><strong>Queue No:</strong> ${nowServing.queue_number}</p>
+                <p><strong>Patient ID:</strong> ${visitDetails.patient.id}</p>
+            </div>`;
+        
+        // Render Right Column: Payment Details
+        const servicesList = visitDetails.services.map(s => `<li><span>${s.name}</span><span>₱${s.price.toFixed(2)}</span></li>`).join('');
+        cashierPaymentDetailsContainer.innerHTML = `
+            <h3>Visit Details</h3>
+            <ul id="payment-details-list">${servicesList}</ul>
+            <hr>
+            <div class="payment-total">
+                TOTAL: ₱${visitDetails.totalAmount.toFixed(2)}
+            </div>
+            <form id="payment-form">
+                <input type="hidden" id="payment-visit-id" value="${nowServing.visit_id}">
+                <div class="form-group">
+                    <label for="payment-method">Payment Method</label>
+                    <select id="payment-method" required>
+                        <option value="Cash">Cash</option>
+                        <option value="Card">Card</option>
+                        <option value="HMO">HMO</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="amount-paid">Amount Paid</label>
+                    <input type="number" id="amount-paid" value="${visitDetails.totalAmount.toFixed(2)}" step="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Process Payment</button>
+            </form>`;
+    }
+
+    // Add this event listener inside DOMContentLoaded
+    document.body.addEventListener('submit', async (e) => {
+        if (e.target.id === 'payment-form') {
+            e.preventDefault();
+            const paymentData = {
+                visit_id: document.getElementById('payment-visit-id').value,
+                amount_paid: document.getElementById('amount-paid').value,
+                payment_method: document.getElementById('payment-method').value,
+            };
+
+            try {
+                await paymentApi.processPayment(paymentData);
+                // The 'queue_updated' socket event will automatically clear the screen
+                const modal = document.querySelector('#confirmation-modal');
+                const question = document.querySelector('#confirmation-question');
+                question.textContent = 'Payment successful! Patient sent to next queue.';
+                modal.querySelector('.display-image').style.display = 'block';
+                modal.style.display = 'flex';
+                // Quick and dirty modal close
+                modal.querySelector('.ok-btn').onclick = () => { modal.style.display = 'none'; };
+
+            } catch (err) {
+                alert('Payment failed: ' + err.message);
+                console.error(err);
+            }
+        }
+    });
 
     initializeSocket();
 
@@ -815,6 +913,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.location.pathname.endsWith("display.html")) {
         renderRecentlyCalled();
+    }
+
+    if (window.location.pathname.endsWith("cashier.html")) {
+        loadNowServing();
     }
 
     // GATEKEEPER
