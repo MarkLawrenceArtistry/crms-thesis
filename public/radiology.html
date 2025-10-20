@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi-precision CRMS - Cashier</title>
+    <title>Hi-precision CRMS - Radiology</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -34,7 +34,6 @@
                 </div>
             </nav>
         </aside>
-
         <main class="main-content">
             <header class="main-header">
                 <button class="hamburger-btn" id="hamburger-btn">
@@ -43,40 +42,27 @@
                     <span class="hamburger-line"></span>
                 </button>
             </header>
-
             <section class="content-card">
-                <h1 class="main-title">Cashier</h1>
-                <div class="cashier-container">
-                    <!-- Left Column: Now Serving -->
-                    <div class="cashier-column" id="cashier-now-serving-container">
-                        <h3>Now Serving for Payment</h3>
-                        <div class="placeholder-text">Waiting for next patient...</div>
-                        <!-- Patient card will be injected here -->
+                <h1 class="main-title">Radiology Worklist</h1>
+                <div class="department-container">
+                    <!-- Column 1: Worklist -->
+                    <div class="department-column worklist-column">
+                        <h3>Waiting Patients</h3>
+                        <div id="radiology-worklist" class="worklist">
+                            <p class="placeholder-text">Loading worklist...</p>
+                        </div>
                     </div>
-
-                    <!-- Right Column: Payment Details -->
-                    <div class="cashier-column" id="cashier-payment-details-container">
+                    <!-- Column 2: Details -->
+                    <div class="department-column details-column">
                         <h3>Visit Details</h3>
-                        <div class="placeholder-text">Select a patient to view details.</div>
-                        <!-- Details and payment form will be injected here -->
+                        <div id="visit-details-container">
+                            <p class="placeholder-text">Select a patient from the worklist.</p>
+                        </div>
                     </div>
                 </div>
             </section>
         </main>
     </div>
-
-    <div id="confirmation-modal" class="modal">
-        <div class="modal-content">
-            <div class="display-image">
-                <img src="assets/checked.png" alt="check icon">
-            </div>
-            <p id="confirmation-question"></p>
-            <div class="display-buttons">
-                <button class="btn ok-btn">Ok</button>
-            </div>
-        </div>
-    </div>
-
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js" type="module"></script>
 </body>

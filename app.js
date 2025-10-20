@@ -26,6 +26,7 @@ const serviceRoutes = require('./routes/services');
 const queueRoutes = require('./routes/queues'); // <-- We need this
 const visitRoutes = require('./routes/visits'); // <-- We need this
 const paymentRoutes = require('./routes/payments');
+const visitServiceRoutes = require('./routes/visitServices');
 
 // Middlewares
 app.use(express.json());
@@ -42,6 +43,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/queues', queueRoutes); // <-- REMOVED the broken middleware
 app.use('/api/visits', visitRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/visit-services', visitServiceRoutes);
 
 // --- initAccounts function remains the same ---
 function initAccounts() {

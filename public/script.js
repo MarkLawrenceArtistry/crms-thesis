@@ -8,6 +8,7 @@ import * as serviceApi from './js/service-api.js';
 import * as visitApi from './js/visit-api.js';
 import * as queueApi from './js/queue-api.js';
 import * as paymentApi from './js/payment-api.js';
+import * as visitServiceApi from './js/visit-service-api.js';
 
 import { renderPatients } from './js/ui-patient.js'
 import { renderMedicines } from './js/ui-inventory.js'
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPatientId = null;
     let currentMedicineId = null;
     let currentVisitPatient = null;
+    let currentWorklistVisitId = null;
     let allServices = [];
     let selectedServices = new Map();
     let currentVisitDetails = null;
@@ -103,6 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // CASHIER
     const cashierNowServingContainer = document.querySelector('#cashier-now-serving-container');
     const cashierPaymentDetailsContainer = document.querySelector('#cashier-payment-details-container');
+
+
+
+    // DEPARTMENT PAGES
+    const labWorklistContainer = document.querySelector('#laboratory-worklist');
+    const radioWorklistContainer = document.querySelector('#radiology-worklist');
+    const visitDetailsContainer = document.querySelector('#visit-details-container');
     
 
 
@@ -214,13 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         socket.on('queue_updated', () => {
             console.log('CLIENT: Received "queue_updated" event. Refreshing lists.');
-            if (paymentQueueList) {
-                loadQueues();
-            }
-
-            if (cashierNowServingContainer) { // If on cashier page
-                loadNowServing();
-            }
+            if (paymentQueueList) loadQueues();
+            if (cashierNowServingContainer) loadNowServing();
+            if (labWorklistContainer) loadWorklist('Laboratory', labWorklistContainer); // <-- ADD
+            if (radioWorklistContainer) loadWorklist('Radiology', radioWorklistContainer); // <-- ADD
         });
 
         socket.on('now_serving', (data) => {
@@ -229,6 +235,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (nowServingNumberEl) {
                 updateNowServing(data);
                 playNotificationSound();
+            }
+        });
+
+        socket.on('visit_status_updated', () => {
+            console.log('CLIENT: Received "visit_status_updated". Refreshing details.');
+            if (currentWorklistVisitId && visitDetailsContainer) {
+                loadAndRenderVisitDetails(currentWorklistVisitId);
             }
         });
     }
@@ -404,6 +417,86 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error(err);
         }
+    }
+
+    // Worklist
+    async function loadWorklist(queueType, container) {
+        try {
+            const worklistItems = await queueApi.fetchQueues(queueType);
+            renderWorklist(worklistItems, container);
+        } catch (error) {
+            console.error(`Error loading ${queueType} worklist:`, error);
+            container.innerHTML = `<p class="error-message">Failed to load worklist.</p>`;
+        }
+    }
+
+    // Visit
+    async function loadAndRenderVisitDetails(visitId) {
+        currentWorklistVisitId = visitId;
+        // Highlight the active item in the worklist
+        document.querySelectorAll('.worklist-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.visitId === visitId);
+        });
+
+        try {
+            // The API now returns an object with patient and services
+            const details = await visitServiceApi.fetchServicesForVisit(visitId);
+            renderVisitDetails(details); // Pass the whole object
+        } catch (error) {
+            console.error('Failed to render visit details:', error);
+            visitDetailsContainer.innerHTML = `<p class="error-message">Could not load details.</p>`;
+        }
+    }
+
+    // --- HELPER FUNCTIONS for Department Pages ---
+    function renderVisitDetails(details) {
+        // The 'details' object now contains details.patient and details.services
+        if (!details || !details.services || details.services.length === 0) {
+            visitDetailsContainer.innerHTML = `<h3>Visit Details</h3><p class="placeholder-text">No services found for this visit.</p>`;
+            return;
+        }
+
+        const servicesHtml = details.services.map(service => {
+            let actionButton = '';
+            // Define the action based on the current status
+            if (service.status === 'Pending Specimen') {
+                actionButton = `<button class="btn btn-primary" data-action="receive-specimen" data-id="${service.visit_service_id}">Receive Specimen</button>`;
+            } else if (service.status === 'For Radiology') {
+                actionButton = `<button class="btn btn-primary" data-action="complete-radiology" data-id="${service.visit_service_id}">Mark as Completed</button>`;
+            } else if (service.status === 'Specimen Received') {
+                // Example of a next step
+                actionButton = `<button class="btn btn-secondary" data-action="enter-results" data-id="${service.visit_service_id}">Enter Results</button>`;
+            }
+
+            return `
+            <div class="visit-service-item">
+                <div class="service-info">
+                    <p>${service.service_name}</p>
+                    <small class="service-status">${service.status}</small>
+                </div>
+                <div class="service-action">${actionButton}</div>
+            </div>
+            `;
+        }).join('');
+
+        // Construct the final HTML with a proper header
+        visitDetailsContainer.innerHTML = `
+            <h3>Details for ${details.patient.name}</h3>
+            ${servicesHtml}
+        `;
+    }
+
+    function renderWorklist(items, container) {
+        if (!items || items.length === 0) {
+            container.innerHTML = `<p class="placeholder-text">Worklist is empty.</p>`;
+            return;
+        }
+        container.innerHTML = items.map(item => `
+            <div class="worklist-item" data-visit-id="${item.visit_id}" data-queue-number="${item.queue_number}">
+                <p><strong>${item.queue_number}</strong></p>
+                <p>${item.patient_name}</p>
+            </div>
+        `).join('');
     }
 
 
@@ -880,6 +973,37 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.play().catch(e => console.warn("Audio playback failed:", e));
     }
 
+    // --- EVENT LISTENERS for Department Pages ---
+    document.body.addEventListener('click', async (e) => {
+        // Handle clicking on a patient in any worklist
+        const worklistItem = e.target.closest('.worklist-item');
+        if (worklistItem) {
+            const visitId = worklistItem.dataset.visitId;
+            loadAndRenderVisitDetails(visitId);
+        }
+
+        // Handle clicking an action button in the details view
+        const actionButton = e.target.closest('.service-action .btn');
+        if (actionButton) {
+            const visitServiceId = actionButton.dataset.id;
+            const action = actionButton.dataset.action;
+            let newStatus = '';
+
+            if (action === 'receive-specimen') newStatus = 'Specimen Received';
+            if (action === 'complete-radiology') newStatus = 'Completed';
+            // Add more actions here
+
+            if (newStatus) {
+                try {
+                    await visitServiceApi.updateVisitServiceStatus(visitServiceId, newStatus);
+                    // The socket event 'visit_status_updated' will trigger the refresh
+                } catch (error) {
+                    alert('Failed to update status: ' + error.message);
+                }
+            }
+        }
+    });
+
 
 
 
@@ -917,6 +1041,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.location.pathname.endsWith("cashier.html")) {
         loadNowServing();
+    }
+
+    if (window.location.pathname.endsWith("laboratory.html")) {
+        loadWorklist('Laboratory', labWorklistContainer);
+    }
+    if (window.location.pathname.endsWith("radiology.html")) {
+        loadWorklist('Radiology', radioWorklistContainer);
     }
 
     // GATEKEEPER
