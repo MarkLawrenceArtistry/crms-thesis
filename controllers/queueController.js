@@ -7,10 +7,18 @@ exports.getQueues = (req, res) => {
     const { type } = req.query;
     if (!type) return res.status(400).json({ success: false, data: "Queue type parameter is required." });
     const query = `
-        SELECT q.id as queue_id, q.queue_number, q.status, p.name as patient_name, p.id as patient_id
+        SELECT 
+            q.id as queue_id, 
+            q.queue_number, 
+            q.status,
+            p.name as patient_name,
+            v.id as visit_id -- <--- CHANGE THIS LINE (from p.id as patient_id)
         FROM queues q
-        JOIN visits v ON q.visit_id = v.id JOIN patients p ON v.patient_id = p.id
-        WHERE q.queue_type = ? AND q.status = 'Waiting' ORDER BY q.created_at ASC`;
+        JOIN visits v ON q.visit_id = v.id
+        JOIN patients p ON v.patient_id = p.id
+        WHERE q.queue_type = ? AND q.status = 'Waiting'
+        ORDER BY q.created_at ASC
+    `;
     db.all(query, [type], (err, rows) => {
         if (err) return res.status(500).json({ success: false, data: err.message });
         res.status(200).json({ success: true, data: rows });

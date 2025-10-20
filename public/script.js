@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         container.innerHTML = items.map(item => `
-            <div class="worklist-item" data-visit-id="${item.visit_id}" data-queue-number="${item.queue_number}">
+            <div class="worklist-item" data-visit-id="${item.visit_id}">
                 <p><strong>${item.queue_number}</strong></p>
                 <p>${item.patient_name}</p>
             </div>
